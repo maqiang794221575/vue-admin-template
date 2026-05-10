@@ -16,10 +16,20 @@ service.interceptors.request.use(
     // do something before request is sent
 
     if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+      // POS API uses 'token' and 'userId' in headers and request data
+      config.headers['token'] = getToken()
+      config.headers['userId'] = store.getters.userId || ''
+      
+      // Also add to params for GET requests or data for POST requests
+      if (config.method === 'get') {
+        config.params = config.params || {}
+        config.params.token = getToken()
+        config.params.userId = store.getters.userId || ''
+      } else {
+        config.data = config.data || {}
+        config.data.token = getToken()
+        config.data.userId = store.getters.userId || ''
+      }
     }
     return config
   },
@@ -33,32 +43,25 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   /**
-   * If you want to get http information such as headers or status
-   * Please return  response => response
-  */
-
-  /**
    * Determine the request status by custom code
-   * Here is just an example
-   * You can also judge the status by HTTP Status Code
+   * POS API returns code: 1 = success, other = error
    */
   response => {
     const res = response.data
 
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    // if the custom code is not 1, it is judged as an error.
+    if (res.code !== 1) {
       Message({
-        message: res.message || 'Error',
+        message: res.msg || res.message || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
 
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
+      // -1: Account conflict or token expired
+      if (res.code === -1) {
+        MessageBox.confirm('您的账号在别处登录或已过期，请重新登录', '提示', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           store.dispatch('user/resetToken').then(() => {
@@ -66,9 +69,14 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject(new Error(res.message || 'Error'))
+      return Promise.reject(new Error(res.msg || res.message || 'Error'))
     } else {
-      return res
+      // Convert to format that the template expects: code: 20000
+      return {
+        code: 20000,
+        data: res.data,
+        message: res.msg || res.message || 'Success'
+      }
     }
   },
   error => {

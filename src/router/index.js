@@ -3,33 +3,8 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-/* Layout */
 import Layout from '@/layout'
 
-/**
- * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
- *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
- * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'/'el-icon-x' the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
-  }
- */
-
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
 export const constantRoutes = [
   {
     path: '/login',
@@ -51,131 +26,173 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
 
   {
-    path: '/example',
+    path: '/user',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    redirect: '/user/list',
+    name: 'User',
+    meta: { title: '用户管理', icon: 'user' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'list',
+        name: 'UserList',
+        component: () => import('@/views/user/list'),
+        meta: { title: '用户列表', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'detail/:id',
+        name: 'UserDetail',
+        component: () => import('@/views/user/detail'),
+        meta: { title: '用户详情', icon: 'user' },
+        hidden: true
       }
     ]
   },
 
   {
-    path: '/form',
+    path: '/lottery',
     component: Layout,
+    redirect: '/lottery/list',
+    name: 'Lottery',
+    meta: { title: '分红抽奖', icon: 'form' },
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: 'list',
+        name: 'LotteryList',
+        component: () => import('@/views/lottery/list'),
+        meta: { title: '抽奖记录', icon: 'table' }
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
+        path: 'config',
+        name: 'LotteryConfig',
+        component: () => import('@/views/lottery/config'),
+        meta: { title: '抽奖配置', icon: 'form' }
       }
     ]
   },
 
   {
-    path: 'external-link',
+    path: '/agent',
     component: Layout,
+    redirect: '/agent/list',
+    name: 'Agent',
+    meta: { title: '代理管理', icon: 'example' },
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'list',
+        name: 'AgentList',
+        component: () => import('@/views/agent/list'),
+        meta: { title: '代理列表', icon: 'table' }
+      },
+      {
+        path: 'audit',
+        name: 'AgentAudit',
+        component: () => import('@/views/agent/audit'),
+        meta: { title: '升级审核', icon: 'form' }
       }
     ]
   },
 
-  // 404 page must be placed at the end !!!
+  {
+    path: '/order',
+    component: Layout,
+    redirect: '/order/list',
+    name: 'Order',
+    meta: { title: '订单管理', icon: 'table' },
+    children: [
+      {
+        path: 'list',
+        name: 'OrderList',
+        component: () => import('@/views/order/list'),
+        meta: { title: '订单列表', icon: 'table' }
+      }
+    ]
+  },
+
+  {
+    path: '/device',
+    component: Layout,
+    redirect: '/device/list',
+    name: 'Device',
+    meta: { title: '机具管理', icon: 'tree' },
+    children: [
+      {
+        path: 'list',
+        name: 'DeviceList',
+        component: () => import('@/views/device/list'),
+        meta: { title: '机具列表', icon: 'table' }
+      },
+      {
+        path: 'transaction/:sn',
+        name: 'DeviceTransaction',
+        component: () => import('@/views/device/transaction'),
+        meta: { title: '交易记录', icon: 'table' },
+        hidden: true
+      }
+    ]
+  },
+
+  {
+    path: '/withdraw',
+    component: Layout,
+    redirect: '/withdraw/list',
+    name: 'Withdraw',
+    meta: { title: '提现管理', icon: 'table' },
+    children: [
+      {
+        path: 'list',
+        name: 'WithdrawList',
+        component: () => import('@/views/withdraw/list'),
+        meta: { title: '提现列表', icon: 'table' }
+      },
+      {
+        path: 'audit',
+        name: 'WithdrawAudit',
+        component: () => import('@/views/withdraw/audit'),
+        meta: { title: '提现审核', icon: 'form' }
+      }
+    ]
+  },
+
+  {
+    path: '/invite',
+    component: Layout,
+    redirect: '/invite/list',
+    name: 'Invite',
+    meta: { title: '邀请管理', icon: 'link' },
+    children: [
+      {
+        path: 'list',
+        name: 'InviteList',
+        component: () => import('@/views/invite/list'),
+        meta: { title: '邀请记录', icon: 'table' }
+      },
+      {
+        path: 'config',
+        name: 'InviteConfig',
+        component: () => import('@/views/invite/config'),
+        meta: { title: '奖励配置', icon: 'form' }
+      }
+    ]
+  },
+
   { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
 
 const router = createRouter()
 
-// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
   const newRouter = createRouter()
-  router.matcher = newRouter.matcher // reset router
+  router.matcher = newRouter.matcher
 }
 
 export default router
